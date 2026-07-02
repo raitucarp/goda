@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.0] — 2026-07-02
+
+### Added
+
+- **Node identity** — `New("my_id")` accepts optional id string; `(*Node).GetID()`, `SetID()`, `GetClasses()`, `SetClasses()`, `AddClass()`, `HasClass()`
+- **`RenderFrom(source)`** — parse QML-like extended CSS string into node trees using `alecthomas/participle/v2`
+- **`(*Node).ExportAs()`** — serialize node tree back to RenderFrom-compatible format (round-trip capable)
+- **Class definitions** — `.className { props }` for reusable style blocks referenced via `#id[class1, class2]`
+- **`justify` shorthand** — alias for `justify-content` in CSS string/map APIs
+- **Nested node syntax** — child nodes declared inline inside braces in RenderFrom format
+
+### Changed
+
+- `New()` signature: `func New(id ...string) *Node` (backward-compatible)
+
 ## [0.1.0] — 2026-07-02
 
 ### Added

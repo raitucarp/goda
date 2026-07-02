@@ -3,6 +3,51 @@
 // CSS Flexbox properties such as flex-direction, justify-content,
 // align-items, and more.
 //
+// # Node Identity
+//
+// Nodes carry an optional id string and a list of class names:
+//
+//	node := goda.New("my_id")
+//	node.AddClass("highlight")
+//	node.AddClass("card")
+//	fmt.Println(node.GetID())       // "my_id"
+//	fmt.Println(node.HasClass("card")) // true
+//
+// # QML-like Extended CSS Syntax
+//
+// Use RenderFrom to build an entire node tree from a string:
+//
+//	source := `
+//	    .card {
+//	        display: flex;
+//	        flex-direction: column;
+//	        padding: 12;
+//	    }
+//
+//	    #root[card] {
+//	        width: 800;
+//	        height: 600;
+//	        gap: 8;
+//
+//	        #header {
+//	            height: 64;
+//	            flex-shrink: 0;
+//	        }
+//
+//	        #body {
+//	            flex: 1;
+//	        }
+//	    }
+//	`
+//	roots, err := goda.RenderFrom(source)
+//	root := roots[0]
+//	goda.CalculateNodeLayout(root, 800, 600, goda.DirectionLTR)
+//
+// Use ExportAs to serialize back to a string:
+//
+//	out := root.ExportAs()
+//	roots2, _ := goda.RenderFrom(out) // round-trips
+//
 // # Builder Pattern
 //
 // All property setters return the receiver (*Node), enabling a fluent
@@ -118,6 +163,7 @@
 //
 //	flex-direction  "row" | "row-reverse" | "column" | "column-reverse"
 //	flex-wrap       "nowrap" | "wrap" | "wrap-reverse"
+//	justify         alias for justify-content
 //	justify-content "flex-start" | "center" | "flex-end" | "space-between" |
 //	                "space-around" | "space-evenly" | "start" | "end"
 //	justify-items   same as justify-content + "stretch" | "auto"

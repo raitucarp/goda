@@ -12,6 +12,8 @@ Goda is a pure Go port of [Facebook's Yoga](https://github.com/facebook/yoga) la
 - **CSS Flexbox** — flex-direction, justify-content, align-items, flex-wrap, gap, padding, margin, border, aspect-ratio, and more
 - **Fluent Builder API** — all setters return `*Node` for chaining
 - **CSS String & Map API** — parse CSS-like syntax to configure nodes
+- **QML-like RenderFrom** — declarative tree-building from extended CSS syntax
+- **Node identity** — optional `id` and `classes` on every node
 - **Layout Output** — single `LayoutOut()` call to get position, size, margins, borders, and padding
 - **rem/em support** — CSS length units resolved against font-size estimates
 - **Pixel grid rounding** — configurable point scale factor
@@ -79,6 +81,49 @@ child := goda.New().ApplyStyle(map[string]string{
 })
 ```
 
+### QML-like RenderFrom
+
+```go
+source := `
+    .card {
+        display: flex;
+        flex-direction: column;
+        padding: 12;
+    }
+
+    #root[card] {
+        width: 800; height: 600; gap: 8;
+
+        #header {
+            height: 64; flex-shrink: 0;
+        }
+
+        #body {
+            flex: 1;
+        }
+    }
+`
+roots, err := goda.RenderFrom(source)
+root := roots[0]
+goda.CalculateNodeLayout(root, 800, 600, goda.DirectionLTR)
+
+// ExportAs round-trips back to the same format
+// out := root.ExportAs()
+// roots2, _ := goda.RenderFrom(out)
+```
+
+### Node Identity
+
+```go
+node := goda.New("my_id")
+node.AddClass("card")
+node.AddClass("highlight")
+
+fmt.Println(node.GetID())        // "my_id"
+fmt.Println(node.HasClass("card")) // true
+fmt.Println(node.GetClasses())    // ["card", "highlight"]
+```
+
 ### Chaining Builder + CSS
 
 ```go
@@ -110,12 +155,13 @@ go test ./...
 
 ## Examples
 
-See [`examples/`](examples/) for a rendered e-commerce page using [fogleman/gg](https://github.com/fogleman/gg):
+See [`examples/ecommerce/`](examples/ecommerce/) for a rendered e-commerce page using [fogleman/gg](https://github.com/fogleman/gg) with 4 build modes (builder, CSS string, CSS map, RenderFrom):
 
 ```sh
 cd examples/ecommerce
 go run .
-# Outputs ecommerce_output.png
+# Outputs ecommerce_builder.png, ecommerce_cssstring.png,
+#          ecommerce_cssmap.png, ecommerce_renderfrom.png
 ```
 
 ## License
