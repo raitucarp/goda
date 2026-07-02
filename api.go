@@ -80,8 +80,14 @@ func ConfigNewDefault() *Config {
 }
 
 // Convenience methods.
-func (n *Node) SetNodeType_Public(nt NodeType) *Node { n.nodeType = nt; return n }
-func (n *Node) GetNodeType_Public() NodeType         { return n.nodeType }
+func (n *Node) SetNodeType_Public(nt NodeType) *Node {
+	if n.nodeType != nt {
+		n.nodeType = nt
+		n.MarkDirtyAndPropagate()
+	}
+	return n
+}
+func (n *Node) GetNodeType_Public() NodeType { return n.nodeType }
 
 func (n *Node) SetIsReferenceBaseline_Public(v bool) *Node {
 	if n.isReferenceBaseline != v {
@@ -93,8 +99,29 @@ func (n *Node) SetIsReferenceBaseline_Public(v bool) *Node {
 func (n *Node) GetIsReferenceBaseline() bool { return n.isReferenceBaseline }
 func (n *Node) GetParent() *Node             { return n.owner }
 
-func (n *Node) SetMinContentWidthFunc(f MeasureFunc) *Node  { n.minContentMeasureFunc = f; return n }
-func (n *Node) SetMinContentWidthValue(v float32) *Node      { n.minContentWidth = NewFloatOptional(v); return n }
-func (n *Node) SetMinContentHeightValue(v float32) *Node     { n.minContentHeight = NewFloatOptional(v); return n }
+func (n *Node) SetMinContentWidthFunc(f MeasureFunc) *Node {
+	if n.minContentMeasureFunc == nil && f == nil {
+		return n
+	}
+	n.minContentMeasureFunc = f
+	n.MarkDirtyAndPropagate()
+	return n
+}
+func (n *Node) SetMinContentWidthValue(v float32) *Node {
+	fo := NewFloatOptional(v)
+	if !n.minContentWidth.Equals(fo) {
+		n.minContentWidth = fo
+		n.MarkDirtyAndPropagate()
+	}
+	return n
+}
+func (n *Node) SetMinContentHeightValue(v float32) *Node {
+	fo := NewFloatOptional(v)
+	if !n.minContentHeight.Equals(fo) {
+		n.minContentHeight = fo
+		n.MarkDirtyAndPropagate()
+	}
+	return n
+}
 func (n *Node) GetMinContentWidthValue() float32      { return n.minContentWidth.UnwrapOrDefault(float32(math.NaN())) }
 func (n *Node) GetMinContentHeightValue() float32     { return n.minContentHeight.UnwrapOrDefault(float32(math.NaN())) }

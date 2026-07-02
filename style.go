@@ -577,3 +577,21 @@ func (s *Style) Equals(other *Style) bool {
 	}
 	return true
 }
+
+func copyGridTrackList(src GridTrackList) GridTrackList {
+	if src == nil {
+		return nil
+	}
+	dst := make(GridTrackList, len(src))
+	copy(dst, src)
+	return dst
+}
+
+func (s *Style) Copy() Style {
+	c := *s
+	c.gridTemplateColumns_ = copyGridTrackList(s.gridTemplateColumns_)
+	c.gridTemplateRows_ = copyGridTrackList(s.gridTemplateRows_)
+	c.gridAutoColumns_ = copyGridTrackList(s.gridAutoColumns_)
+	c.gridAutoRows_ = copyGridTrackList(s.gridAutoRows_)
+	return c
+}

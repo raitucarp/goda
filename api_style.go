@@ -610,8 +610,10 @@ func (n *Node) SetAspectRatio(value float32) *Node {
 	if !isUndefined(value) {
 		fo = NewFloatOptional(value)
 	}
-	n.style.SetAspectRatio(fo)
-	n.MarkDirtyAndPropagate()
+	if !n.style.AspectRatio().Equals(fo) {
+		n.style.SetAspectRatio(fo)
+		n.MarkDirtyAndPropagate()
+	}
 	return n
 }
 func (n *Node) GetAspectRatio() float32 {

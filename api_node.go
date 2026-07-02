@@ -16,9 +16,25 @@ func (n *Node) InsertChildNode(child *Node, index int) *Node {
 }
 
 // SwapChildNode swaps a child node at the given index.
+// The old child at index is properly detached (owner cleared, layout reset, marked dirty).
+// The new child must not already have an owner.
 func (n *Node) SwapChildNode(child *Node, index int) *Node {
+	if index < 0 || index >= len(n.children) {
+		return n
+	}
+	if child.GetOwner() != nil {
+		panic("Child already has an owner, it must be removed first.")
+	}
+	old := n.children[index]
+	old.SetLayout(NewLayoutResults())
+	old.SetOwner(nil)
+	dirtiedFunc := old.GetDirtiedFunc()
+	old.SetDirtiedFunc(nil)
+	old.SetDirty(true)
+	old.SetDirtiedFunc(dirtiedFunc)
 	n.ReplaceChildAt(child, index)
 	child.SetOwner(n)
+	n.MarkDirtyAndPropagate()
 	return n
 }
 
@@ -81,10 +97,14 @@ func (n *Node) SetChildrenList(children []*Node) *Node {
 					break
 				}
 			}
-			if !found {
-				old.SetLayout(NewLayoutResults())
-				old.SetOwner(nil)
-			}
+		if !found {
+			old.SetLayout(NewLayoutResults())
+			old.SetOwner(nil)
+			df := old.GetDirtiedFunc()
+			old.SetDirtiedFunc(nil)
+			old.SetDirty(true)
+			old.SetDirtiedFunc(df)
+		}
 		}
 	}
 	n.SetChildren(children)
@@ -104,10 +124,10 @@ func (n *Node) MarkDirty() *Node {
 	return n
 }
 
-// CopyStyleFrom copies all style properties from the source node.
+// CopyStyleFrom copies all style properties from the source node (deep copy).
 func (n *Node) CopyStyleFrom(src *Node) *Node {
 	if !n.style.Equals(&src.style) {
-		n.style = src.style
+		n.style = src.style.Copy()
 		n.MarkDirtyAndPropagate()
 	}
 	return n

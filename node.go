@@ -61,6 +61,7 @@ func NewNodeWithConfig(config *Config) *Node {
 
 func (n *Node) Clone() *Node {
 	clone := *n
+	clone.style = n.style.Copy()
 	clone.layout = NewLayoutResults()
 	clone.layout.configVersion = n.layout.configVersion
 	clone.layout.computedFlexBasis = n.layout.computedFlexBasis
@@ -328,6 +329,7 @@ func (n *Node) RemoveChildAt(index int) {
 
 func (n *Node) ClearChildren() {
 	n.children = nil
+	n.contentsChildrenCount = 0
 }
 
 func (n *Node) SetConfig(config *Config) {
