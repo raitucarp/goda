@@ -12,11 +12,6 @@ import (
 	goda "goda"
 )
 
-const (
-	designWidth  = 1280
-	designHeight = 800
-)
-
 var (
 	fontFace   font.Face
 	fontFaceSm font.Face
@@ -33,10 +28,14 @@ func initFont() {
 
 type Game struct {
 	root        *goda.Node
+	winW        int
+	winH        int
 	mouseX      int
 	mouseY      int
 	activeMenu  int
 	needsLayout bool
+	prevW       int
+	prevH       int
 }
 
 func (g *Game) Update() error {
@@ -45,7 +44,7 @@ func (g *Game) Update() error {
 	g.mouseY = my
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		if handleClick(g.root, 0, 0, g) {
+		if g.root != nil && handleClick(g.root, 0, 0, g) {
 			g.needsLayout = true
 		}
 	}
@@ -82,6 +81,9 @@ func handleClick(n *goda.Node, absLeft, absTop float32, g *Game) bool {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	if g.root == nil || g.winW <= 0 || g.winH <= 0 {
+		return
+	}
 	if g.needsLayout {
 		g.rebuildLayout()
 		g.needsLayout = false
@@ -90,16 +92,31 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	renderTree(screen, g.root, 0, 0, g)
 }
 
-func (g *Game) Layout(_, _ int) (int, int) {
-	if g.root == nil {
-		g.rebuildLayout()
+func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+	if outsideWidth <= 0 {
+		outsideWidth = 800
 	}
-	return designWidth, designHeight
+	if outsideHeight <= 0 {
+		outsideHeight = 600
+	}
+	if outsideWidth != g.prevW || outsideHeight != g.prevH {
+		g.prevW = outsideWidth
+		g.prevH = outsideHeight
+		g.winW = outsideWidth
+		g.winH = outsideHeight
+		g.needsLayout = true
+	}
+	if g.winW == 0 {
+		g.winW = outsideWidth
+		g.winH = outsideHeight
+		g.needsLayout = true
+	}
+	return outsideWidth, outsideHeight
 }
 
 func (g *Game) rebuildLayout() {
-	g.root = buildLayout(designWidth, designHeight, g.activeMenu)
-	goda.CalculateNodeLayout(g.root, designWidth, designHeight, goda.DirectionLTR)
+	g.root = buildLayout(float32(g.winW), float32(g.winH), g.activeMenu)
+	goda.CalculateNodeLayout(g.root, float32(g.winW), float32(g.winH), goda.DirectionLTR)
 }
 
 func renderTree(screen *ebiten.Image, n *goda.Node, absLeft, absTop float32, g *Game) {
@@ -113,7 +130,7 @@ func renderTree(screen *ebiten.Image, n *goda.Node, absLeft, absTop float32, g *
 	my := float32(g.mouseY)
 	isHovered := w > 0 && h > 0 && mx >= x && mx < x+w && my >= y && my < y+h
 
-	if w > 1 && h > 1 {
+	if w > 0 && h > 0 {
 		if widget, ok := n.GetContext().(Widget); ok {
 			renderWidget(screen, x, y, w, h, widget, isHovered)
 		}
@@ -126,7 +143,7 @@ func renderTree(screen *ebiten.Image, n *goda.Node, absLeft, absTop float32, g *
 
 func main() {
 	initFont()
-	ebiten.SetWindowSize(designWidth, designHeight)
+	ebiten.SetWindowSize(1280, 800)
 	ebiten.SetWindowTitle("Dashboard — goda + Ebitengine")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 

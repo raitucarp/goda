@@ -55,9 +55,9 @@ func buildBody(fullWidth, fullHeight float32, activeMenu int) *goda.Node {
 		SetFlexDirection(goda.FlexDirectionRow).
 		SetFlexGrow(1)
 
-	sidebarW := float32(0.18 * float64(fullWidth))
-	if sidebarW < 160 {
-		sidebarW = 160
+	sidebarW := fullWidth * 0.18
+	if sidebarW < 150 {
+		sidebarW = 150
 	}
 	if sidebarW > 280 {
 		sidebarW = 280
@@ -67,8 +67,8 @@ func buildBody(fullWidth, fullHeight float32, activeMenu int) *goda.Node {
 	mainArea := newWidget("main", wMain).
 		SetFlexGrow(1).SetFlexShrink(1).
 		SetFlexDirection(goda.FlexDirectionColumn).
-		SetPadding(goda.EdgeAll, 20).
-		SetGap(goda.GutterAll, 16)
+		SetPadding(goda.EdgeAll, 16).
+		SetGap(goda.GutterAll, 14)
 
 	buildView(mainArea, activeMenu)
 
