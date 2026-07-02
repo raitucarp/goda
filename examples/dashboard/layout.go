@@ -7,8 +7,8 @@ func buildLayout(fullWidth, fullHeight float32, activeMenu int) *goda.Node {
 		SetWidth(fullWidth).SetHeight(fullHeight).
 		SetFlexDirection(goda.FlexDirectionColumn)
 
-	header := buildHeader()
-	body := buildBody(activeMenu)
+	header := buildHeader(fullWidth)
+	body := buildBody(fullWidth, fullHeight-80, activeMenu)
 
 	root.InsertChildNode(header, 0)
 	root.InsertChildNode(body, 1)
@@ -23,13 +23,14 @@ func buildLayout(fullWidth, fullHeight float32, activeMenu int) *goda.Node {
 	return root
 }
 
-func buildHeader() *goda.Node {
+func buildHeader(fullWidth float32) *goda.Node {
 	h := newWidget("header", wHeader).
 		SetFlexDirection(goda.FlexDirectionRow).
 		SetAlignItems(goda.AlignCenter).
 		SetHeight(56).SetFlexShrink(0).
 		SetPadding(goda.EdgeLeft, 20).SetPadding(goda.EdgeRight, 20).
-		SetGap(goda.GutterAll, 16)
+		SetGap(goda.GutterAll, 16).
+		SetWidth(fullWidth)
 
 	logo := newWidget("logo", wLogo).
 		SetWidth(140).SetHeight(32).SetFlexShrink(0)
@@ -49,12 +50,20 @@ func buildHeader() *goda.Node {
 	return h
 }
 
-func buildBody(activeMenu int) *goda.Node {
+func buildBody(fullWidth, fullHeight float32, activeMenu int) *goda.Node {
 	body := goda.New("body").
 		SetFlexDirection(goda.FlexDirectionRow).
 		SetFlexGrow(1)
 
-	sidebar := buildSidebar(activeMenu)
+	sidebarW := float32(0.18 * float64(fullWidth))
+	if sidebarW < 160 {
+		sidebarW = 160
+	}
+	if sidebarW > 280 {
+		sidebarW = 280
+	}
+
+	sidebar := buildSidebar(sidebarW, activeMenu)
 	mainArea := newWidget("main", wMain).
 		SetFlexGrow(1).SetFlexShrink(1).
 		SetFlexDirection(goda.FlexDirectionColumn).
@@ -68,9 +77,9 @@ func buildBody(activeMenu int) *goda.Node {
 	return body
 }
 
-func buildSidebar(activeMenu int) *goda.Node {
+func buildSidebar(w float32, activeMenu int) *goda.Node {
 	sidebar := newWidget("sidebar", wSidebar).
-		SetWidth(220).SetFlexShrink(0).
+		SetWidth(w).SetFlexShrink(0).
 		SetFlexDirection(goda.FlexDirectionColumn).
 		SetGap(goda.GutterAll, 2).
 		SetPadding(goda.EdgeTop, 12).SetPadding(goda.EdgeBottom, 12).

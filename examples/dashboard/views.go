@@ -83,7 +83,7 @@ func buildProductsView(main *goda.Node) {
 
 	for _, p := range productsList {
 		card := newWidget("", wProdCard).
-			SetWidth(210).SetHeight(170).SetFlexShrink(0).
+			SetWidth(210).SetMinWidth(180).SetHeight(170).SetFlexShrink(0).
 			SetFlexDirection(goda.FlexDirectionColumn).
 			SetPadding(goda.EdgeAll, 14).SetGap(goda.GutterAll, 6)
 		card.SetContext(Widget{Kind: wProdCard, Data: p})
@@ -151,9 +151,19 @@ func buildKPIRow(cards []KPIData) *goda.Node {
 		SetGap(goda.GutterAll, 14).
 		SetFlexShrink(0).SetHeight(110)
 
+	n := len(cards)
+	minCardW := float32(140)
+	if n > 0 {
+		available := float32(designWidth) - 220 - 40 - float32((n-1)*14)
+		minCardW = available / float32(n)
+		if minCardW < 120 {
+			minCardW = 120
+		}
+	}
+
 	for i, k := range cards {
 		card := newWidget("", wKPICard).
-			SetFlexGrow(1).SetMinHeight(90).
+			SetFlexGrow(1).SetMinWidth(minCardW).SetMinHeight(90).
 			SetFlexDirection(goda.FlexDirectionColumn).
 			SetPadding(goda.EdgeAll, 14).SetGap(goda.GutterAll, 4)
 		card.SetContext(Widget{Kind: wKPICard, Data: k})
@@ -164,7 +174,7 @@ func buildKPIRow(cards []KPIData) *goda.Node {
 
 func buildChartCard(title, chartType string, data []float64, labels []string, color string) *goda.Node {
 	card := newWidget("chart-"+title, wChartCard).
-		SetFlexGrow(1).SetFlexShrink(1).
+		SetFlexGrow(1).SetFlexShrink(1).SetMinWidth(250).
 		SetPadding(goda.EdgeAll, 16)
 	card.SetContext(Widget{Kind: wChartCard, Data: ChartSeries{
 		Type:   chartType,
