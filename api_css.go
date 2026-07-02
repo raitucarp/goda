@@ -90,6 +90,7 @@ func (n *Node) ApplyStyleString(css string) *Node {
 var supportedCSSProperties = map[string]bool{
 	"direction": true, "flexdirection": true, "flexwrap": true,
 	"justifycontent": true, "justifyitems": true, "justifyself": true,
+	"justify": true,
 	"aligncontent": true, "alignitems": true, "alignself": true,
 	"position": true, "overflow": true, "display": true, "boxsizing": true,
 	"flex": true, "flexgrow": true, "flexshrink": true, "flexbasis": true,
@@ -120,6 +121,8 @@ func (n *Node) applyStyleProperty(key, val string) {
 		n.SetJustifyItems(parseJustify(val))
 	case "justifyself":
 		n.SetJustifySelf(parseJustify(val))
+	case "justify":
+		n.SetJustifyContent(parseJustify(val))
 	case "aligncontent":
 		n.SetAlignContent(parseAlign(val))
 	case "alignitems":
