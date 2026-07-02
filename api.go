@@ -3,8 +3,13 @@ package goda
 import "math"
 
 // New creates a new Node with default configuration.
-func New() *Node {
-	return NewNode()
+// Optionally accepts an id string as the first argument: New("my_id").
+func New(id ...string) *Node {
+	n := NewNode()
+	if len(id) > 0 {
+		n.id = id[0]
+	}
+	return n
 }
 
 // NewWithConfig creates a new Node with the given configuration.

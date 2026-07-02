@@ -29,6 +29,8 @@ type Node struct {
 	config                     *Config
 	processedDimensions        [2]StyleSizeLength
 	fontSizeEstimate           float32
+	id                         string
+	classes                    []string
 }
 
 func NewNode() *Node {
@@ -76,6 +78,10 @@ func (n *Node) Clone() *Node {
 	clone.layout.padding_ = n.layout.padding_
 	clone.owner = nil
 	clone.children = nil
+	if n.classes != nil {
+		clone.classes = make([]string, len(n.classes))
+		copy(clone.classes, n.classes)
+	}
 	return &clone
 }
 
@@ -86,6 +92,39 @@ func (n *Node) useWebDefaults() {
 
 func (n *Node) GetContext() interface{}                     { return n.context }
 func (n *Node) SetContext(ctx interface{})                   { n.context = ctx }
+func (n *Node) GetID() string                                 { return n.id }
+func (n *Node) SetID(id string)                               { n.id = id }
+func (n *Node) GetClasses() []string {
+	if n.classes == nil {
+		return nil
+	}
+	out := make([]string, len(n.classes))
+	copy(out, n.classes)
+	return out
+}
+func (n *Node) SetClasses(classes []string) {
+	n.classes = nil
+	if classes != nil {
+		n.classes = make([]string, len(classes))
+		copy(n.classes, classes)
+	}
+}
+func (n *Node) AddClass(class string) {
+	for _, c := range n.classes {
+		if c == class {
+			return
+		}
+	}
+	n.classes = append(n.classes, class)
+}
+func (n *Node) HasClass(class string) bool {
+	for _, c := range n.classes {
+		if c == class {
+			return true
+		}
+	}
+	return false
+}
 func (n *Node) AlwaysFormsContainingBlock() bool             { return n.alwaysFormsContainingBlock }
 func (n *Node) SetAlwaysFormsContainingBlock(v bool)         { n.alwaysFormsContainingBlock = v }
 func (n *Node) GetHasNewLayout() bool                        { return n.hasNewLayout }
