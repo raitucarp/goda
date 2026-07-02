@@ -23,6 +23,3 @@ vendor/
 # OS
 .DS_Store
 Thumbs.db
-
-# Example output images
-examples/*/*.png

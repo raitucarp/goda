@@ -155,14 +155,25 @@ go test ./...
 
 ## Examples
 
-See [`examples/ecommerce/`](examples/ecommerce/) for a rendered e-commerce page using [fogleman/gg](https://github.com/fogleman/gg) with 4 build modes (builder, CSS string, CSS map, RenderFrom):
+See [`examples/ecommerce/`](examples/ecommerce/) for a rendered e-commerce page using [fogleman/gg](https://github.com/fogleman/gg) with 4 build modes:
 
 ```sh
 cd examples/ecommerce
 go run .
-# Outputs ecommerce_builder.png, ecommerce_cssstring.png,
-#          ecommerce_cssmap.png, ecommerce_renderfrom.png
+# Outputs 4 identical layouts built 4 different ways
 ```
+
+### Showcase — E-Commerce Page (800x1080)
+
+| Builder | CSS String |
+|---|---|
+| ![builder](examples/ecommerce/ecommerce_builder.png) | ![cssstring](examples/ecommerce/ecommerce_cssstring.png) |
+
+| CSS Map | RenderFrom |
+|---|---|
+| ![cssmap](examples/ecommerce/ecommerce_cssmap.png) | ![renderfrom](examples/ecommerce/ecommerce_renderfrom.png) |
+
+All four images render identically — built with builder, CSS string, CSS map, and declarative RenderFrom syntax respectively.
 
 ## License
 
