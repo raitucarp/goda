@@ -81,12 +81,15 @@ func handleClick(n *goda.Node, absLeft, absTop float32, g *Game) bool {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	if g.root == nil || g.winW <= 0 || g.winH <= 0 {
+	if g.winW <= 0 || g.winH <= 0 {
 		return
 	}
-	if g.needsLayout {
+	if g.needsLayout || g.root == nil {
 		g.rebuildLayout()
 		g.needsLayout = false
+	}
+	if g.root == nil {
+		return
 	}
 	screen.Fill(hex("#F0F2F5"))
 	renderTree(screen, g.root, 0, 0, g)
